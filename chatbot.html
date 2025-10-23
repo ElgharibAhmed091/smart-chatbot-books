@@ -24,24 +24,15 @@
     body, html {
       height: 100%;
       font-family: 'Tajawal', sans-serif;
-      background: var(--bg);
       color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-    }
-
-    /* خلفية ثابتة */
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.2), transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.15), transparent 50%),
-        linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      z-index: -1;
+      overflow: auto; /* للسماح بالنزول تحت */
+      background-image: url('https://www.thezoombackgrounds.com/cdn/shop/files/1HCuDy8u_hw5F80pxcLRE1rMplhbWbai3.jpg'); /* خلفية رفوف كتب */
+      background-size: cover; /* تمديد لملء الشاشة */
+      background-position: center;
+      background-repeat: no-repeat; /* لا تكرار، لكن cover يمددها */
     }
 
     /* البطاقة */
@@ -58,6 +49,7 @@
       flex-direction: column;
       overflow: hidden;
       backdrop-filter: blur(16px);
+      display: none; /* مخفي في البداية */
     }
 
     .card-header {
@@ -65,7 +57,6 @@
       background: linear-gradient(135deg, var(--primary), #818cf8);
       color: white;
       text-align: center;
-      border-bottom: Makes the header stay on top
       flex-shrink: 0;
     }
     .card-header h3 {
@@ -78,7 +69,6 @@
       opacity: 0.92;
     }
 
-    /* جسم الشات ياخد كل المساحة المتبقية */
     .card-body {
       flex: 1;
       padding: 24px;
@@ -86,7 +76,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      min-height: 0; /* مهم جدًا */
+      min-height: 0;
     }
     .card-body::-webkit-scrollbar {
       width: 5px;
@@ -119,7 +109,17 @@
       border: 1px solid var(--border);
     }
 
-    /* الفوتر ثابت في الأسفل دايمًا */
+    /* بيانات خدمة العملاء أسفل الشات */
+    #customer-info {
+      margin-top: 20px;
+      padding: 15px;
+      background: #334155;
+      border-radius: 12px;
+      font-size: 14px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
     .card-footer {
       flex-shrink: 0;
       padding: 20px 24px;
@@ -130,7 +130,6 @@
       gap: 14px;
     }
 
-    /* حقل الكتابة متعدد الأسطر وثابت */
     #userInput {
       flex: 1;
       min-height: 48px;
@@ -147,6 +146,7 @@
       transition: all 0.25s ease;
       font-family: inherit;
       line-height: 1.6;
+      spellcheck: true; /* تفعيل التصحيح الإملائي */
     }
     #userInput:focus {
       border-color: var(--primary);
@@ -211,6 +211,31 @@
       50% { transform: scale(1.2); opacity: 1; }
     }
 
+    /* زر الأيقونة العائم (كتاب مفتوح) */
+    #chat-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: all 0.25s;
+    }
+    #chat-toggle:hover {
+      background: var(--primary-hover);
+      transform: scale(1.1);
+    }
+    #chat-toggle img {
+      width: 40px;
+      height: 40px;
+    }
+
     @media (max-width: 480px) {
       #card { width: 96vw; height: 94vh; }
       .card-header { padding: 20px; }
@@ -221,12 +246,26 @@
 </head>
 <body>
 
+  <!-- زر الأيقونة العائم -->
+  <div id="chat-toggle">
+    <img src="https://uxwing.com/wp-content/themes/uxwing/download/education-school/open-book-icon.svg" alt="كتاب مفتوح">
+  </div>
+
   <div id="card">
     <div class="card-header">
       <h3>BookAI Card</h3>
-      <p>اكتب أي عدد من الأسئلة، الحقل ما بيختفيش</p>
+     <p>"اسأل عن الكتب أو اطلب اقتراحات، نحن هنا دائمًا!"</p>
     </div>
-    <div class="card-body" id="chatBody"></div>
+    <div class="card-body" id="chatBody">
+      <!-- بيانات خدمة العملاء أسفل -->
+      <div id="customer-info">
+        <strong>خدمة العملاء:</strong><br>
+        إيميل: betweencovers@gmail.com<br>
+        X: @betweencovers01<br>
+        Instagram: @betweencovers02<br>
+        Telegram: @betweencovers03
+      </div>
+    </div>
     <div class="card-footer">
       <button id="micBtn" class="btn"><i class="fas fa-microphone"></i></button>
       <textarea id="userInput" placeholder="اكتب سؤالك هنا..."></textarea>
@@ -239,10 +278,25 @@
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
     const micBtn = document.getElementById('micBtn');
+    const chatToggle = document.getElementById('chat-toggle');
+    const card = document.getElementById('card');
     const SERVER_URL = 'http://localhost:3000';
 
-    // رسالة ترحيب
-    addBot('مرحبًا! أنا <strong style="color:#6366f1;">BookAI Card</strong><br>اكتب أي عدد من الأسئلة، الحقل دايمًا تحت.');
+    // رسالة ترحيب عند الفتح
+    function openChat() {
+      card.style.display = 'flex';
+      if (!chatBody.innerHTML.includes('مرحبًا')) {
+        addBot('مرحبًا! أنا <strong style="color:#6366f1;">BookAI Card</strong><br>اكتب أي عدد من الأسئلة، الحقل دايمًا تحت.');
+      }
+    }
+
+    chatToggle.onclick = () => {
+      if (card.style.display === 'flex') {
+        card.style.display = 'none';
+      } else {
+        openChat();
+      }
+    };
 
     let isSending = false;
 
@@ -278,7 +332,6 @@
 
     sendBtn.onclick = sendMessage;
 
-    // تكبير الحقل تلقائيًا
     function adjustInputHeight() {
       userInput.style.height = '48px';
       userInput.style.height = (userInput.scrollHeight) + 'px';
@@ -286,7 +339,6 @@
 
     userInput.addEventListener('input', adjustInputHeight);
 
-    // إعادة الحجم عند الإرسال
     userInput.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -298,7 +350,7 @@
       const m = document.createElement('div');
       m.className = 'msg user';
       m.innerHTML = txt.replace(/\n/g, '<br>');
-      chatBody.appendChild(m);
+      chatBody.insertBefore(m, document.getElementById('customer-info')); // قبل بيانات العملاء
       scroll();
     }
 
@@ -306,7 +358,7 @@
       const m = document.createElement('div');
       m.className = 'msg bot';
       m.innerHTML = html;
-      chatBody.appendChild(m);
+      chatBody.insertBefore(m, document.getElementById('customer-info'));
       scroll();
     }
 
@@ -315,7 +367,7 @@
       const t = document.createElement('div');
       t.id = 'typing';
       t.innerHTML = '<span></span><span></span><span></span> يكتب...';
-      chatBody.appendChild(t);
+      chatBody.insertBefore(t, document.getElementById('customer-info'));
       scroll();
     }
 
@@ -330,7 +382,7 @@
       }, 100);
     }
 
-    // الصوت
+    // الصوت (كما هو)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const rec = SpeechRecognition ? new SpeechRecognition() : null;
     let recording = false;
@@ -360,7 +412,6 @@
       }
     };
 
-    // ضبط الحقل من أول مرة
     adjustInputHeight();
   </script>
 </body>
