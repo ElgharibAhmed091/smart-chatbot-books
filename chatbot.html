@@ -1,418 +1,598 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BookAI Card</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --text: #e2e8f0;
-      --text-light: #94a3b8;
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --accent: #10b981;
-      --shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 10px 20px rgba(0, 0, 0, 0.2);
-      --radius: 24px;
-    }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Between covers</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg: #7c7c72; --card-bg: #f0eaea; --border: #000000;
+  --text: #ffffff; --text-light: #ede1e1;
+  --primary:  #495c4b; --primary-hover:  #2e302f; --accent: #0e3f2f;
+  --shadow: 0 20px 40px rgba(32, 22, 22, 0.3),0 10px 20px rgba(0,0,0,0.2);
+  --radius: 24px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body, html{
+  height:100%;
+  font-family:'Tajawal',sans-serif;
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:auto;
+  background-image:url('https://www.thezoombackgrounds.com/cdn/shop/files/1HCuDy8u_hw5F80pxcLRE1rMplhbWbai3.jpg');
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body, html {
-      height: 100%;
-      font-family: 'Tajawal', sans-serif;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: auto; /* للسماح بالنزول تحت */
-      background-image: url('https://www.thezoombackgrounds.com/cdn/shop/files/1HCuDy8u_hw5F80pxcLRE1rMplhbWbai3.jpg'); /* خلفية رفوف كتب */
-      background-size: cover; /* تمديد لملء الشاشة */
-      background-position: center;
-      background-repeat: no-repeat; /* لا تكرار، لكن cover يمددها */
-    }
+/* الكارد في وسط الصفحة – أكبر وأوسع */
+#card {
+  position: fixed;
+  top: 45%; /* تم رفعه للأعلى */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 1000px; 
+  height: 85vh;
+  max-height: 800px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  display: none;
+  z-index: 999;
+  animation: fadeUp 0.3s ease;
+}
 
-    /* البطاقة */
-    #card {
-      width: 440px;
-      max-width: 94vw;
-      height: 680px;
-      max-height: 92vh;
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      backdrop-filter: blur(16px);
-      display: none; /* مخفي في البداية */
-    }
 
-    .card-header {
-      padding: 24px;
-      background: linear-gradient(135deg, var(--primary), #818cf8);
-      color: white;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .card-header h3 {
-      font-size: 21px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    .card-header p {
-      font-size: 14.5px;
-      opacity: 0.92;
-    }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
 
-    .card-body {
-      flex: 1;
-      padding: 24px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-height: 0;
-    }
-    .card-body::-webkit-scrollbar {
-      width: 5px;
-    }
-    .card-body::-webkit-scrollbar-thumb {
-      background: #475569;
-      border-radius: 10px;
-    }
+.card-header {
+  padding: 22px;
+  background: linear-gradient(135deg,var(--primary),#686c8e);
+  color: white;
+  text-align: center;
+  flex-shrink: 0;
+}
+.card-header h3 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+.card-header p { font-size: 15px; opacity: 0.92; }
 
-    .msg {
-      max-width: 88%;
-      padding: 15px 20px;
-      border-radius: 18px;
-      font-size: 15.2px;
-      line-height: 1.65;
-      word-wrap: break-word;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-    .msg.user {
-      align-self: flex-end;
-      background: var(--primary);
-      color: white;
-      border-bottom-right-radius: 6px;
-    }
-    .msg.bot {
-      align-self: flex-start;
-      background: #334155;
-      color: var(--text);
-      border-bottom-left-radius: 6px;
-      border: 1px solid var(--border);
-    }
+.card-body {
+  flex: 1;
+  padding: 18px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+.card-body::-webkit-scrollbar { width: 8px; }
+.card-body::-webkit-scrollbar-thumb { background: #000000; border-radius: 10px; }
 
-    /* بيانات خدمة العملاء أسفل الشات */
-    #customer-info {
-      margin-top: 20px;
-      padding: 15px;
-      background: #334155;
-      border-radius: 12px;
-      font-size: 14px;
-      text-align: center;
-      border: 1px solid var(--border);
-    }
+.msg {
+  max-width: 85%;
+  padding: 15px 20px;
+  border-radius: 18px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  word-wrap: break-word;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.msg.user {
+  align-self: flex-end;
+  background: rgb(179, 168, 168);
+  color: rgb(0, 0, 0);
+  border-bottom-right-radius: 6px;
+}
+.msg.bot {
+  align-self: flex-start;
+  background: #373937;
+  color: var(--text);
+  border-bottom-left-radius: 6px;
+  border: 1px solid var(--border);
+}
 
-    .card-footer {
-      flex-shrink: 0;
-      padding: 20px 24px;
-      background: #1e293b;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: flex-end;
-      gap: 14px;
-    }
+.msg-source {
+  font-size: 11px;
+  color: #fc5454;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
 
-    #userInput {
-      flex: 1;
-      min-height: 48px;
-      max-height: 120px;
-      padding: 12px 18px;
-      border: 1.5px solid var(--border);
-      border-radius: 20px;
-      font-size: 15.2px;
-      outline: none;
-      background: #334155;
-      color: var(--text);
-      resize: none;
-      overflow-y: auto;
-      transition: all 0.25s ease;
-      font-family: inherit;
-      line-height: 1.6;
-      spellcheck: true; /* تفعيل التصحيح الإملائي */
-    }
-    #userInput:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-      background: #475569;
-    }
-    #userInput::placeholder {
-      color: #94a3b8;
-    }
+.card-footer {
+  flex-shrink: 0;
+  padding: 14px 18px;
+  background: #495c4b;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-    .btn {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
-      cursor: pointer;
-      background: #334155;
-      color: var(--text-light);
-      transition: all 0.25s ease;
-      flex-shrink: 0;
-    }
-    .btn:hover {
-      background: #475569;
-      transform: translateY(-2px);
-    }
-    #sendBtn {
-      background: var(--primary);
-      color: white;
-    }
-    #sendBtn:hover {
-      background: var(--primary-hover);
-    }
+.input-container {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
 
-    #typing {
-      align-self: flex-start;
-      background: #334155;
-      color: var(--text);
-      padding: 15px 20px;
-      border-radius: 18px;
-      border-bottom-left-radius: 6px;
-      font-style: italic;
-      font-size: 14.8px;
-      display: flex;
-      gap: 6px;
-      border: 1px solid var(--border);
-    }
-    #typing span {
-      width: 9px;
-      height: 9px;
-      background: var(--accent);
-      border-radius: 50%;
-      animation: pulse 1.5s infinite;
-    }
-    #typing span:nth-child(2) { animation-delay: 0.2s; }
-    #typing span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes pulse {
-      0%, 100% { transform: scale(0.8); opacity: 0.6; }
-      50% { transform: scale(1.2); opacity: 1; }
-    }
+#userInput {
+  flex: 1;
+  min-height: 44px;
+  max-height: 130px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 22px;
+  font-size: 15px;
+  outline: none;
+  background: #353b43;
+  color: var(--text);
+  resize: none;
+  overflow-y: auto;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  line-height: 1.45;
+}
+#userInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(160, 161, 210, 0.25);
+  background:#353b43;
+}
+  #userInput::placeholder{ color: #94a3b8; }
 
-    /* زر الأيقونة العائم (كتاب مفتوح) */
-    #chat-toggle {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 60px;
-      height: 60px;
-      background: var(--primary);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      transition: all 0.25s;
-    }
-    #chat-toggle:hover {
-      background: var(--primary-hover);
-      transform: scale(1.1);
-    }
-    #chat-toggle img {
-      width: 40px;
-      height: 40px;
-    }
+.btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  cursor: pointer;
+  background:  #495c4b;
+  color: var(--text-light);
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+.btn:hover { background: #42433f; transform: translateY(-1px); }
+#sendBtn { background: var(--primary); color: white; }
+#sendBtn:hover { background: var(--primary-hover); }
+#fileBtn { background: #373937; color: white; }
+#fileBtn:hover { background: #059669; }
 
-    @media (max-width: 480px) {
-      #card { width: 96vw; height: 94vh; }
-      .card-header { padding: 20px; }
-      .card-body { padding: 18px; }
-      .card-footer { padding: 16px 20px; }
-    }
-  </style>
+.file-input-container {
+  position: relative;
+  display: inline-block;
+}
+
+#fileInput {
+  position: absolute;
+  left: -9999px;
+}
+
+#typing {
+  align-self: flex-start;
+  background: #373937;
+  color: var(--text);
+  padding: 12px 18px;
+  border-radius: 18px;
+  border-bottom-left-radius: 6px;
+  font-style: italic;
+  font-size: 14px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border: 1px solid var(--border);
+}
+#typing span {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+#typing span:nth-child(2) { animation-delay: 0.2s; }
+#typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pulse {
+  0%,100%{transform:scale(0.8);opacity:0.6;}
+  50%{transform:scale(1.2);opacity:1;}
+}
+
+/* أيقونة الكتاب */
+#chat-toggle {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 70px;
+  height: 70px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  transition: all 0.25s;
+  z-index: 1000;
+}
+#chat-toggle:hover {
+  background: var(--primary-hover);
+  transform: scale(1.1);
+}
+#chat-toggle img { width: 45px; height: 45px; }
+
+#customer-info-outside {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #2e3141;
+  color: var(--text);
+  padding: 12px 0;
+  font-size: 14px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  z-index: 998;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+}
+
+.social-icon {
+  color: var(--text-light);
+  font-size: 20px;
+  transition: color 0.3s ease;
+  text-decoration: none;
+}
+.social-icon:hover {
+  color: var(--primary);
+}
+
+#suggestions {
+  color: #f87171;
+  font-size: 13px;
+  text-align: right;
+  min-height: 18px;
+  padding: 0 5px;
+}
+
+.upload-info {
+  font-size: 12px;
+  color: var(--text-light);
+  text-align: center;
+  margin-top: 5px;
+}
+
+/* تنسيقات التصحيح التلقائي */
+.correction-feedback {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 5px 0;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.correction-feedback i {
+  color: #10b981;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media(max-width:768px){
+  #card{width:96vw;height:80vh;}
+  .card-header{padding:18px;}
+  .card-body{padding:14px;}
+  .card-footer{padding:12px 14px;}
+  #customer-info-outside{flex-direction:column;gap:10px;padding:10px 0;}
+}
+</style>
 </head>
 <body>
 
-  <!-- زر الأيقونة العائم -->
-  <div id="chat-toggle">
-    <img src="https://uxwing.com/wp-content/themes/uxwing/download/education-school/open-book-icon.svg" alt="كتاب مفتوح">
-  </div>
 
-  <div id="card">
-    <div class="card-header">
-      <h3>BookAI Card</h3>
-     <p>"اسأل عن الكتب أو اطلب اقتراحات، نحن هنا دائمًا!"</p>
-    </div>
-    <div class="card-body" id="chatBody">
-      <!-- بيانات خدمة العملاء أسفل -->
-      <div id="customer-info">
-        <strong>خدمة العملاء:</strong><br>
-        إيميل: betweencovers@gmail.com<br>
-        X: @betweencovers01<br>
-        Instagram: @betweencovers02<br>
-        Telegram: @betweencovers03
+<div id="card">
+  <div class="card-header">
+    <h3>بين الغلافين</h3>
+    <p>"اسأل عن الكتب أو اطلب اقتراحات، نحن هنا دائمًا!"</p>
+  </div>
+  <div class="card-body" id="chatBody"></div>
+  <div class="card-footer">
+    <div id="suggestions"></div>
+    <div class="input-container">
+      <button id="fileBtn" class="btn" title="رفع ملف للنقد"><i class="fas fa-file-upload"></i></button>
+      <div class="file-input-container">
+        <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt">
       </div>
-    </div>
-    <div class="card-footer">
       <button id="micBtn" class="btn"><i class="fas fa-microphone"></i></button>
       <textarea id="userInput" placeholder="اكتب سؤالك هنا..."></textarea>
       <button id="sendBtn" class="btn"><i class="fas fa-paper-plane"></i></button>
     </div>
+    <div class="upload-info">يدعم: PDF, Word, TXT (حتى 10MB)</div>
   </div>
+</div>
 
-  <script>
-    const chatBody = document.getElementById('chatBody');
-    const userInput = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const micBtn = document.getElementById('micBtn');
-    const chatToggle = document.getElementById('chat-toggle');
-    const card = document.getElementById('card');
-    const SERVER_URL = 'http://localhost:3000';
+<div id="customer-info-outside">
 
-    // رسالة ترحيب عند الفتح
-    function openChat() {
-      card.style.display = 'flex';
-      if (!chatBody.innerHTML.includes('مرحبًا')) {
-        addBot('مرحبًا! أنا <strong style="color:#6366f1;">BookAI Card</strong><br>اكتب أي عدد من الأسئلة، الحقل دايمًا تحت.');
+  <strong>خدمة العملاء:</strong>
+
+  <a href="mailto:betweencovers@gmail.com" class="social-icon">
+    <span dir="ltr"><i class="fas fa-envelope"></i> betweencovers@gmail.com</span>
+  </a>
+
+  <a href="https://x.com/betweencovers01" class="social-icon" target="_blank">
+    <span dir="ltr"><i class="fab fa-x-twitter"></i>
+</i> @betweencovers01</span>
+  </a>
+
+  <a href="https://instagram.com/betweencovers02" class="social-icon" target="_blank">
+    <span dir="ltr"><i class="fab fa-instagram"></i> @betweencovers02</span>
+  </a>
+
+  <a href="https://t.me/betweencovers03" class="social-icon" target="_blank">
+    <span dir="ltr"><i class="fab fa-telegram"></i> @betweencovers03</span>
+  </a>
+
+</div>
+
+
+<script>
+const chatBody = document.getElementById('chatBody');
+const userInput = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const micBtn = document.getElementById('micBtn');
+const fileBtn = document.getElementById('fileBtn');
+const fileInput = document.getElementById('fileInput');
+
+const card = document.getElementById('card');
+const suggestionsDiv = document.getElementById('suggestions');
+const SERVER_URL = 'http://localhost:3000';
+
+// =================== نظام التصحيح التلقائي المحسن ===================
+const autoCorrections = {
+    "بحب": "أحب", "عاوز": "أريد", "ابغا": "أريد", "ايه": "ماذا", 
+    "ليه": "لماذا", "عشان": "لأن", "هيعمل": "سيفعل", "مش": "ليس",
+    "قرايه": "قراءة", "سعاده": "سعادة", "انا": "أنا", "جدااا": "جدًا",
+    "كتير": "كثير", "صفحه": "صفحة", "مكتبه": "مكتبة", "روايه": "رواية",
+    "ثقافه": "ثقافة", "معرفه": "معرفة", "راحه": "راحة", "نفسيه": "نفسية",
+    "ثقه": "ثقة", "قراءه": "قراءة", "محفوز": "محفوظ", "نجيب محفوز": "نجيب محفوظ",
+    "كُتّاب": "كُتَّاب", "كتاب": "كتاب", "كتب": "كتب", "مؤلف": "مؤلف", "كاتب": "كاتب"
+};
+
+function applyAutoCorrection(text) {
+    let corrected = text;
+    for (const [wrong, correct] of Object.entries(autoCorrections)) {
+        const regex = new RegExp(`\\b${wrong}\\b`, 'gi');
+        corrected = corrected.replace(regex, correct);
+    }
+    return corrected;
+}
+
+function showCorrectionFeedback(original, corrected, corrections) {
+    if (corrections && corrections.correctionsCount > 0) {
+        const correctionInfo = document.createElement('div');
+        correctionInfo.className = 'correction-feedback';
+        correctionInfo.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-magic"></i>
+                <small>تم تصحيح ${corrections.correctionsCount} كلمة تلقائياً</small>
+            </div>
+        `;
+        const lastMessage = chatBody.lastChild;
+        if (lastMessage) {
+            chatBody.insertBefore(correctionInfo, lastMessage);
+        }
+    }
+}
+
+function openChat(){
+  card.style.display='flex';
+  if(!chatBody.innerHTML.includes('مرحبًا')){
+    addBot('مرحبًا! أنا <strong style="color:#FFFAF0;">بوت بين الغلافين</strong><br>أستطيع مساعدتك في:<br>• ترشيحات الكتب حسب المجال<br>• نقد وتحليل النصوص<br>• استخراج النص من الملفات<br>• الإجابة على استفساراتك<br><br>اكتب أي سؤال أو ارفع ملف للنقد!','between covers');
+  }
+}
+// استبدل هذا السطر:
+// chatToggle.onclick=()=>{card.style.display=(card.style.display==='flex')?'none':'flex';if(card.style.display==='flex') openChat();}
+
+// بهذا الكود:
+// === فتح الشات تلقائيًا بعد 2 ثواني بدون أي أيقونة ===
+setTimeout(() => {
+  card.style.display = 'flex';
+  openChat(); // رسالة الترحيب
+}, 2000);
+let isSending=false;
+function sendMessage(){
+  if(isSending) return;
+  let text=userInput.value.trim();
+  if(!text) return;
+  
+  isSending=true;
+  
+  const originalText = text;
+  text = applyAutoCorrection(text);
+  
+  addUser(text); 
+  userInput.value=''; 
+  adjustInputHeight(); 
+  suggestionsDiv.innerHTML='';
+  showTyping();
+  
+  fetch(`${SERVER_URL}/chat`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({message:text})
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    hideTyping();
+    addBot(data.reply.replace(/\n/g,'<br>'),data.source);
+    
+    if (data.corrections && data.corrections.correctionsCount > 0) {
+        showCorrectionFeedback(originalText, text, data.corrections);
+    }
+  })
+  .catch(()=>{
+    hideTyping(); 
+    addBot('عذرًا، حدث خطأ في الاتصال.','Error');
+  })
+  .finally(()=>{isSending=false;});
+}
+sendBtn.onclick=sendMessage;
+
+// رفع الملف للنقد
+fileBtn.onclick=()=>fileInput.click();
+fileInput.onchange=function(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  
+  if(file.size>10*1024*1024){
+    alert('حجم الملف كبير جداً! الحد الأقصى 10MB');
+    return;
+  }
+  
+  addUser(`📄 ${file.name}`);
+  showTyping();
+  
+  const formData=new FormData();
+  formData.append('file',file);
+  
+  fetch(`${SERVER_URL}/upload`,{
+    method:'POST',
+    body:formData
+  })
+  .then(res=>res.json())
+  .then(data=>{
+    hideTyping();
+    addBot(data.reply.replace(/\n/g,'<br>'),data.source);
+  })
+  .catch(err=>{
+    hideTyping();
+    addBot('عذرًا، حدث خطأ في رفع الملف.','Error');
+  })
+  .finally(()=>{
+    fileInput.value='';
+  });
+};
+
+function adjustInputHeight(){userInput.style.height='44px';userInput.style.height=(userInput.scrollHeight)+'px';}
+userInput.addEventListener('input',()=>{adjustInputHeight(); checkArabicSpelling();});
+userInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+
+function addUser(txt){const m=document.createElement('div');m.className='msg user';m.innerHTML=txt.replace(/\n/g,'<br>');chatBody.appendChild(m);scroll();}
+function addBot(html,source){
+  const m=document.createElement('div');m.className='msg bot';
+  m.innerHTML=`<div class="msg-source">${source}</div>`+html;
+  chatBody.appendChild(m);scroll();
+}
+function showTyping(){hideTyping();const t=document.createElement('div');t.id='typing';t.innerHTML='<span></span><span></span><span></span> يكتب الان...';chatBody.appendChild(t);scroll();}
+function hideTyping(){const t=document.getElementById('typing');if(t) t.remove();}
+function scroll(){chatBody.scrollTop=chatBody.scrollHeight;}
+
+const arabicWords = [
+  // === الكتب والقراءة ===
+  "كتاب", "كتب", "مكتبة", "رواية", "روايات", "قصة", "قصص", "قصص أطفال",
+  "رواية قصيرة", "رواية طويلة", "مؤلف", "كاتب", "كُتّاب", "مؤلفين", "كاتبين",
+  "قراءة", "قراء", "اقرأ", "صفحة", "صفحات", "فصل", "الفصل", "جزء", "مراجعة",
+  "نقد", "أنقد", "كتاب إلكتروني", "مكتبة رقمية", "قراءة ممتعة", "مثير", "مشوق",
+  "خيال", "مغامرة", "تسلية", "أدب", "شعر", "قافية", "شوقي", "حكمة", "بيت",
+  "الفستق", "نظرية", "حسين", "طه", "محفوظ", "نجيب", "نجيب محفوظ",
+
+  // === المواضيع والمجالات ===
+  "فلسفة", "دين", "دينية", "تفسير", "قرآن", "قران", "صحة", "علوم", "تكنولوجيا",
+  "فن", "موسيقى", "رياضة", "ثقافة", "تعليم", "بحث", "إبداع", "تطوير", "تحفيز",
+  "شخصية", "مؤلف مشهور", "كتاب مشهور", "نصائح", "أخبار", "موضوع", "عنوان",
+
+  // === الأوامر والاستفسارات ===
+  "أريد", "ابغا", "اعطيني", "معلومات", "سؤال", "اقتراح", "اسم", "عدد", "لغة",
+  "تعلم", "تجربة", "مبتدئ", "محترف", "متقدم", "انجح", "السعادة", "صحح", "دايمًا",
+
+  // === الأسئلة والسياق ===
+  "كيف", "من", "هو", "أنا", "هنا", "اكتب", "أي", "عدد", "الأسئلة", "الحقل",
+  "اليوم", "قصيدة", "غزوة", "أحد", "غزوة أحد", "كانت", "متى", "مسوي", "أيش",
+
+  // === كلمات دينية وتاريخية ===
+  "الصبر", "نفسها", "حول", "الساعة", "مخترع", "تدور", "الأرض", "بالجنة",
+  "المبشرين", "العشرة", "هم",
+
+  // === اللهجات والعامية ===
+  "السلام", "عليكم", "مرحبا", "حالك", "خدمة", "العملاء", "نحن", "السعودية",
+  "أحمد",
+  
+];
+
+  // إضافة المزيد من الكلمات ا)
+function removeTashkeel(text){
+  return text.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/g,'');
+}
+
+function levenshtein(a,b){
+  const matrix = Array.from({length:a.length+1},()=>Array(b.length+1).fill(0));
+  for(let i=0;i<=a.length;i++) matrix[i][0]=i;
+  for(let j=0;j<=b.length;j++) matrix[0][j]=j;
+  for(let i=1;i<=a.length;i++){
+    for(let j=1;j<=b.length;j++){
+      const cost=a[i-1]===b[j-1]?0:1;
+      matrix[i][j]=Math.min(matrix[i-1][j]+1,matrix[i][j-1]+1,matrix[i-1][j-1]+cost);
+    }
+  }
+  return matrix[a.length][b.length];
+}
+
+function similarity(a,b){
+  a=removeTashkeel(a).toLowerCase();
+  b=removeTashkeel(b).toLowerCase();
+  const distance=levenshtein(a,b);
+  return 1-distance/Math.max(a.length,b.length);
+}
+
+function checkArabicSpelling(){
+  const text=userInput.value.trim();
+  if(!text) return suggestionsDiv.innerHTML="";
+  const words=text.split(/\s+/);
+  let result="";
+  words.forEach(word=>{
+    const cleanWord=removeTashkeel(word).toLowerCase();
+    const found=arabicWords.some(w=>removeTashkeel(w).toLowerCase()===cleanWord);
+    if(!found){
+      const suggestion=arabicWords.map(w=>({w,score:similarity(cleanWord,removeTashkeel(w).toLowerCase())}))
+        .sort((a,b)=>b.score-a.score)[0];
+      if(suggestion.score>0.6){
+        result+=`${word}: اقتراح → ${suggestion.w}<br>`;
+      }else{
+        result+=`${word}: تحقق من الإملاء<br>`;
       }
     }
+  });
+  suggestionsDiv.innerHTML=result;
+}
 
-    chatToggle.onclick = () => {
-      if (card.style.display === 'flex') {
-        card.style.display = 'none';
-      } else {
-        openChat();
-      }
-    };
-
-    let isSending = false;
-
-    function sendMessage() {
-      if (isSending) return;
-      const text = userInput.value.trim();
-      if (!text) return;
-
-      isSending = true;
-      addUser(text);
-      userInput.value = '';
-      adjustInputHeight();
-      showTyping();
-
-      fetch(`${SERVER_URL}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text })
-      })
-      .then(res => res.json())
-      .then(data => {
-        hideTyping();
-        addBot(data.reply.replace(/\n/g, '<br>'));
-      })
-      .catch(() => {
-        hideTyping();
-        addBot('عذرًا، حدث خطأ في الاتصال.');
-      })
-      .finally(() => {
-        isSending = false;
-      });
-    }
-
-    sendBtn.onclick = sendMessage;
-
-    function adjustInputHeight() {
-      userInput.style.height = '48px';
-      userInput.style.height = (userInput.scrollHeight) + 'px';
-    }
-
-    userInput.addEventListener('input', adjustInputHeight);
-
-    userInput.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    function addUser(txt) {
-      const m = document.createElement('div');
-      m.className = 'msg user';
-      m.innerHTML = txt.replace(/\n/g, '<br>');
-      chatBody.insertBefore(m, document.getElementById('customer-info')); // قبل بيانات العملاء
-      scroll();
-    }
-
-    function addBot(html) {
-      const m = document.createElement('div');
-      m.className = 'msg bot';
-      m.innerHTML = html;
-      chatBody.insertBefore(m, document.getElementById('customer-info'));
-      scroll();
-    }
-
-    function showTyping() {
-      hideTyping();
-      const t = document.createElement('div');
-      t.id = 'typing';
-      t.innerHTML = '<span></span><span></span><span></span> يكتب...';
-      chatBody.insertBefore(t, document.getElementById('customer-info'));
-      scroll();
-    }
-
-    function hideTyping() {
-      const t = document.getElementById('typing');
-      if (t) t.remove();
-    }
-
-    function scroll() {
-      setTimeout(() => {
-        chatBody.scrollTop = chatBody.scrollHeight;
-      }, 100);
-    }
-
-    // الصوت (كما هو)
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const rec = SpeechRecognition ? new SpeechRecognition() : null;
-    let recording = false;
-
-    if (rec) {
-      rec.lang = 'ar-SA';
-      rec.continuous = false;
-      rec.onresult = e => {
-        const transcript = e.results[0][0].transcript;
-        userInput.value += (userInput.value ? '\n' : '') + transcript;
-        adjustInputHeight();
-      };
-      rec.onend = () => {
-        recording = false;
-        micBtn.innerHTML = '<i class="fas fa-microphone"></i>';
-      };
-    }
-
-    micBtn.onclick = () => {
-      if (!rec) return alert('الصوت غير مدعوم');
-      if (recording) {
-        rec.stop();
-      } else {
-        rec.start();
-        recording = true;
-        micBtn.innerHTML = '<i class="fas fa-stop"></i>';
-      }
-    };
-
-    adjustInputHeight();
-  </script>
+// =================== دعم الميكروفون ===================
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+const rec=SpeechRecognition?new SpeechRecognition():null;let recording=false;
+if(rec){rec.lang='ar-SA';rec.continuous=false;
+rec.onresult=e=>{const transcript=e.results[0][0].transcript;userInput.value+=(userInput.value?'\n':'')+transcript;adjustInputHeight();checkArabicSpelling();}
+rec.onend=()=>{recording=false;micBtn.innerHTML='<i class="fas fa-microphone"></i>';}}
+micBtn.onclick=()=>{if(!rec) return alert('الصوت غير مدعوم');if(recording) rec.stop();else{rec.start();recording=true;micBtn.innerHTML='<i class="fas fa-stop"></i>';}}
+adjustInputHeight();
+</script>
 </body>
 </html>
